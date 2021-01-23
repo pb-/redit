@@ -4,7 +4,7 @@
 
 `redit` is useful when you keep a folder of textual notes and you want to go back to a recently edited file whose name you might not remember. In this case you would type `redit` and be greeted with this interactive prompt:
 
-[screenshot]
+![Screenshot](doc/screenshot.png)
 
 Answering with `s`, `enter` will then directly load `example.txt` into your editor.
 
@@ -15,3 +15,10 @@ mkdir -p ~/.config/redit && echo '~/notes' > ~/.config/redit/default-location
 ```
 
 Alternatively you can provide a location with `redit ~/Downloads` and finally `redit` falls back to the current directory.
+
+
+## Installation
+
+```shell
+pip install redit
+```

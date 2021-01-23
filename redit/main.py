@@ -78,13 +78,21 @@ def list_files():
     return sorted(files, reverse=True)[:NUM_FILES]
 
 
+def get_terminal_width():
+    try:
+        columns, _ = os.get_terminal_size()
+        return columns
+    except OSError:
+        return 80
+
+
 def run():
     arg = sys.argv[1] if len(sys.argv) > 1 else None
     directory = arg or load_default_directory() or '.'
     os.chdir(directory)
     recent_files = list_files()
     now = time.time()
-    columns, _ = os.get_terminal_size()
+    columns = get_terminal_width()
 
     for key, (timestamp, name) in zip(KEYS, recent_files):
         age = human_time_delta(now - timestamp)
