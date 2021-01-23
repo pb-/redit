@@ -7,7 +7,7 @@ KEYS = 'asdfjklgh'
 NUM_FILES = len(KEYS)
 
 def human_time_delta(s):
-    """ 
+    """
     Three-character-wide human-readable approximate time delta of s seconds.
     """
     seconds = int(s)
@@ -78,29 +78,30 @@ def list_files():
     return sorted(files, reverse=True)[:NUM_FILES]
 
 
-arg = sys.argv[1] if len(sys.argv) > 1 else None
-directory = arg or load_default_directory() or '.'
-os.chdir(directory)
-recent_files = list_files()
-now = time.time()
-columns, _ = os.get_terminal_size()
+def run():
+    arg = sys.argv[1] if len(sys.argv) > 1 else None
+    directory = arg or load_default_directory() or '.'
+    os.chdir(directory)
+    recent_files = list_files()
+    now = time.time()
+    columns, _ = os.get_terminal_size()
 
-for key, (timestamp, name) in zip(KEYS, recent_files):
-    age = human_time_delta(now - timestamp)
-    space_left = columns - 11 - len(name)
-    preview = render_preview(read_content(name, space_left + 1), space_left)
-    print(f' \033[34;1m{key}\033[0m \033[33;1m{age:>3}\033[0m \033[37m{name}\033[0m  {preview}')
+    for key, (timestamp, name) in zip(KEYS, recent_files):
+        age = human_time_delta(now - timestamp)
+        space_left = columns - 11 - len(name)
+        preview = render_preview(read_content(name, space_left + 1), space_left)
+        print(f' \033[34;1m{key}\033[0m \033[33;1m{age:>3}\033[0m \033[37m{name}\033[0m  {preview}')
 
 
-while True:
-    try:
-        key = input('?> ')
-        if not key or key not in KEYS:
-            print(f'bad input, try one of {{{",".join(KEYS)}}}, ^D or ^C to quit')
-            continue
-        name = recent_files[KEYS.find(key)][1]
-        editor = os.getenv('EDITOR')
-        os.execlp(editor, editor, name)
-    except (EOFError, KeyboardInterrupt):
-        print()
-        break
+    while True:
+        try:
+            key = input('?> ')
+            if not key or key not in KEYS:
+                print(f'bad input, try one of {{{",".join(KEYS)}}}, ^D or ^C to quit')
+                continue
+            name = recent_files[KEYS.find(key)][1]
+            editor = os.getenv('EDITOR')
+            os.execlp(editor, editor, name)
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break

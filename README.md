@@ -15,8 +15,3 @@ mkdir -p ~/.config/redit && echo '~/notes' > ~/.config/redit/default-location
 ```
 
 Alternatively you can provide a location with `redit ~/Downloads` and finally `redit` falls back to the current directory.
-
-
-## Prototype TODO
-
- * Make default directory configurable
