@@ -6,7 +6,7 @@
 
 ![Screenshot](doc/screenshot.png)
 
-Answering with `s`, `enter` will then directly load `example.txt` into your editor.
+Answering with `j`, `enter` will then directly load `README.md` into your editor.
 
 You can set a default directory to look for files (say, `~/notes`) in `~/.config/redit/default-location` like this:
 
