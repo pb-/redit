@@ -3,8 +3,13 @@ import os
 import sys
 import time
 
+KEYS = 'asdfjklgh'
+NUM_FILES = len(KEYS)
+
 def human_time_delta(s):
-    """Three-character-wide human-readable approximate time delta of s."""
+    """ 
+    Three-character-wide human-readable approximate time delta of s seconds.
+    """
     seconds = int(s)
     if seconds < 60:
         return f'{seconds}s'
@@ -52,19 +57,31 @@ def read_content(name, max_chars):
         return open(name, encoding='latin1').read(max_chars)
 
 
-KEYS = 'asdfjklgh'
-NUM_FILES = len(KEYS)
+def load_default_directory():
+    try:
+        default = open(os.path.join(
+            os.getenv('HOME'), '.config', 'redit', 'default-location')
+        ).read().strip()
+
+        return os.path.expanduser(default)
+    except FileNotFoundError:
+        return None
+
+
+def list_files():
+    files = (
+        (dir_entry.stat().st_mtime, dir_entry.name)
+        for dir_entry in os.scandir()
+        if dir_entry.is_file()
+    )
+
+    return sorted(files, reverse=True)[:NUM_FILES]
+
 
 arg = sys.argv[1] if len(sys.argv) > 1 else None
-directory = arg or os.path.join(os.getenv('HOME'), 'n')
+directory = arg or load_default_directory() or '.'
 os.chdir(directory)
-dir_entries = os.scandir('.')
-files = (
-    (dir_entry.stat().st_mtime, dir_entry.name)
-    for dir_entry in dir_entries
-    if dir_entry.is_file()
-)
-recent_files = sorted(files, reverse=True)[:NUM_FILES]
+recent_files = list_files()
 now = time.time()
 columns, _ = os.get_terminal_size()
 
@@ -79,7 +96,7 @@ while True:
     try:
         key = input('?> ')
         if not key or key not in KEYS:
-            print(f'bad input, try one of {{{",".join(KEYS)}}}')
+            print(f'bad input, try one of {{{",".join(KEYS)}}}, ^D or ^C to quit')
             continue
         name = recent_files[KEYS.find(key)][1]
         editor = os.getenv('EDITOR')
