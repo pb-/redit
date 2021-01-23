@@ -1,4 +1,6 @@
+import re
 import os
+import sys
 import time
 
 def human_time_delta(s):
@@ -28,11 +30,14 @@ def human_time_delta(s):
         return f'{months}M'
 
     years = days // 365
-    return f'{years}y'
+    if years < 10:
+        return f'{years}y'
+
+    return '9+y'
 
 
 def render_preview(data, space_left):
-    d = data.replace('\n', '⏎  ')
+    d = re.sub('[\x00-\x1f\x80-\x9f]', '.', data.replace('\n', '⏎  '))
 
     if len(d) > space_left:
         return d[:space_left - 1] + '…'
@@ -40,12 +45,19 @@ def render_preview(data, space_left):
     return d
 
 
+def read_content(name, max_chars):
+    try:
+        return open(name, encoding='utf8').read(max_chars)
+    except UnicodeDecodeError:
+        return open(name, encoding='latin1').read(max_chars)
+
 
 KEYS = 'asdfjklgh'
 NUM_FILES = len(KEYS)
 
-
-os.chdir(os.path.join(os.getenv('HOME'), 'n'))
+arg = sys.argv[1] if len(sys.argv) > 1 else None
+directory = arg or os.path.join(os.getenv('HOME'), 'n')
+os.chdir(directory)
 dir_entries = os.scandir('.')
 files = (
     (dir_entry.stat().st_mtime, dir_entry.name)
@@ -59,7 +71,7 @@ columns, _ = os.get_terminal_size()
 for key, (timestamp, name) in zip(KEYS, recent_files):
     age = human_time_delta(now - timestamp)
     space_left = columns - 11 - len(name)
-    preview = render_preview(open(name).read(space_left + 1), space_left)
+    preview = render_preview(read_content(name, space_left + 1), space_left)
     print(f' \033[34;1m{key}\033[0m \033[33;1m{age:>3}\033[0m \033[37m{name}\033[0m  {preview}')
 
 
