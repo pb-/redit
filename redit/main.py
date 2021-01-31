@@ -68,6 +68,15 @@ def load_default_directory():
         return None
 
 
+def load_editor_command():
+    try:
+        return open(os.path.join(
+            os.getenv('HOME'), '.config', 'redit', 'editor')
+        ).read().strip()
+    except FileNotFoundError:
+        return None
+
+
 def list_files():
     files = (
         (dir_entry.stat().st_mtime, dir_entry.name)
@@ -108,7 +117,8 @@ def run():
                 print(f'bad input, try one of {{{",".join(KEYS)}}}, ^D or ^C to quit')
                 continue
             name = recent_files[KEYS.find(key)][1]
-            editor = os.getenv('EDITOR')
+            editor = os.getenv('EDITOR') or load_editor_command()
+            assert editor, 'no editor available, set $EDITOR or configure'
             os.execlp(editor, editor, name)
         except (EOFError, KeyboardInterrupt):
             print()

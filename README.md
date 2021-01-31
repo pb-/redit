@@ -22,3 +22,8 @@ Alternatively you can provide a location with `redit ~/Downloads` and finally `r
 ```shell
 pip install redit
 ```
+
+
+## Configure an editor
+
+`redit` will try to launch the editor in `$EDITOR` or use the one configured in `~/.config/redit/editor`.

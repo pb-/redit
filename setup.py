@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='redit',
-    version='1.0.0',
+    version='1.0.2',
     author='Paul Baecher',
     description='Preview recently edited notes and launch editor',
     long_description=open('README.md').read(),
